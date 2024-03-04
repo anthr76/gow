@@ -73,7 +73,7 @@ jobs:
       - name: Prepare
         id: prep
         run: |
-          IMAGES=""
+          IMAGES="base,base-app,steam"
           PUSH=false
 
           if [ -n "${{ secrets.GHCR_TOKEN }}" ]; then
