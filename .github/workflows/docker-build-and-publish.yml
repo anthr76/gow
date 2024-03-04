@@ -76,12 +76,6 @@ jobs:
           IMAGES=""
           PUSH=false
 
-          if [ -n "${{ secrets.DOCKERHUB_TOKEN }}" ]; then
-            IMAGES="anthr76/${{ inputs.image_name }}"
-            PUSH=true
-            echo "has_docker_token=true" >> $GITHUB_OUTPUT
-          fi
-
           if [ -n "${{ secrets.GHCR_TOKEN }}" ]; then
             REGISTRY_IMAGE="ghcr.io/${{ github.repository_owner }}/${{ inputs.image_name }}"
             if [ "$IMAGES" = "" ]; then
@@ -131,20 +125,13 @@ jobs:
           version: latest
           driver-opts: image=moby/buildkit:master
 
-      - name: Login to DockerHub
-        if: steps.prep.outputs.has_docker_token != '' # secrets not available in PRs
-        uses: docker/login-action@v2
-        with:
-          username: abeltramo
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
       - name: Login to GitHub Container Registry
         if: steps.prep.outputs.has_github_token != '' # secrets not available in PRs
         uses: docker/login-action@v2
         with:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
-          password: ${{ secrets.GHCR_TOKEN }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and Push
         id: docker_build
